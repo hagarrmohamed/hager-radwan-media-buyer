@@ -1,116 +1,96 @@
-/* =========================================================
-   EDIT YOUR DETAILS HERE
-   These values are applied to every matching link/label on the page.
-   (index.html contains the same values as a fallback for search engines
-   and for visitors with JavaScript turned off — if you change them here,
-   use Find & Replace in index.html to update them there too.)
-   ========================================================= */
-const SITE = {
-  name: "Hager Radwan",
-  role: "Media Buyer",
-  email: "Hajjarrmohamed@gmail.com",
-  phoneDisplay: "+20 11 5668 5718",   // how the number is shown
-  phoneIntl: "201156685718",          // country code + number, digits only (used for tel: and WhatsApp)
-  whatsappMessage: "Hi Hager, I saw your portfolio and I'd like to talk about running ads for my business."
-};
-
+/* Hager Radwan — portfolio interactions (no dependencies) */
 (function () {
   "use strict";
 
-  /* ---------- Apply site details ---------- */
-  const links = {
-    email: "mailto:" + SITE.email,
-    phone: "tel:+" + SITE.phoneIntl,
-    whatsapp: "https://wa.me/" + SITE.phoneIntl +
-      (SITE.whatsappMessage ? "?text=" + encodeURIComponent(SITE.whatsappMessage) : "")
-  };
-  document.querySelectorAll("[data-contact]").forEach(function (a) {
-    const href = links[a.dataset.contact];
-    if (href) a.href = href;
-  });
-  const texts = { email: SITE.email, phone: SITE.phoneDisplay };
-  document.querySelectorAll("[data-contact-text]").forEach(function (el) {
-    const t = texts[el.dataset.contactText];
-    if (t) el.textContent = t;
-  });
-  document.querySelectorAll("[data-site]").forEach(function (el) {
-    const t = SITE[el.dataset.site];
-    if (t) el.textContent = t;
-  });
-  const year = document.getElementById("year");
-  if (year) year.textContent = new Date().getFullYear();
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var hasIO = "IntersectionObserver" in window;
 
-  /* ---------- Header: border on scroll ---------- */
-  const header = document.querySelector(".site-header");
-  const quick = document.querySelector(".quick-contact");
-  const hero = document.querySelector(".hero");
-  function onScroll() {
-    const y = window.scrollY;
-    header.classList.toggle("is-scrolled", y > 8);
-    if (quick && hero) quick.classList.toggle("is-visible", y > hero.offsetHeight * 0.6);
+  /* ---------- 50 products tested → 15 kept (case 03) ---------- */
+  var grid = document.querySelector(".funnel__grid");
+  if (grid) {
+    // 15 winners spread across the field, purely illustrative positions
+    var winners = [2, 5, 9, 13, 16, 21, 24, 28, 31, 35, 38, 40, 44, 46, 49];
+    var frag = document.createDocumentFragment();
+    var order = 0;
+    for (var i = 0; i < 50; i++) {
+      var dot = document.createElement("i");
+      if (winners.indexOf(i) !== -1) {
+        dot.className = "win";
+        dot.style.setProperty("--d", order++);
+      }
+      frag.appendChild(dot);
+    }
+    grid.appendChild(frag);
   }
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
 
-  /* ---------- Mobile menu ---------- */
-  const toggle = document.querySelector(".nav-toggle");
-  const nav = document.getElementById("site-nav");
-  function setMenu(open) {
-    toggle.setAttribute("aria-expanded", String(open));
-    nav.classList.toggle("is-open", open);
-  }
-  toggle.addEventListener("click", function () {
-    setMenu(toggle.getAttribute("aria-expanded") !== "true");
-  });
-  nav.addEventListener("click", function (e) {
-    if (e.target.closest("a")) setMenu(false);
-  });
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && nav.classList.contains("is-open")) { setMenu(false); toggle.focus(); }
-  });
-  window.matchMedia("(min-width: 821px)").addEventListener("change", function (m) {
-    if (m.matches) setMenu(false);
-  });
-
-  /* ---------- Highlight current section in nav ---------- */
-  const navLinks = Array.from(nav.querySelectorAll('a[href^="#"]:not(.btn)'));
-  if ("IntersectionObserver" in window) {
-    const byId = {};
-    navLinks.forEach(function (a) { byId[a.getAttribute("href").slice(1)] = a; });
-    const io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (!en.isIntersecting) return;
-        navLinks.forEach(function (a) { a.classList.remove("is-active"); a.removeAttribute("aria-current"); });
-        const a = byId[en.target.id];
-        if (a) { a.classList.add("is-active"); a.setAttribute("aria-current", "true"); }
+  /* ---------- Reveal on scroll ---------- */
+  var revealables = document.querySelectorAll(".reveal, .funnel");
+  if (!hasIO || reduceMotion) {
+    revealables.forEach(function (el) { el.classList.add("is-in"); });
+  } else {
+    var revealer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-in");
+          revealer.unobserve(entry.target);
+        }
       });
-    }, { rootMargin: "-45% 0px -50% 0px" });
-    ["about", "skills", "case-studies", "contact"].forEach(function (id) {
-      const s = document.getElementById(id);
-      if (s) io.observe(s);
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+    revealables.forEach(function (el) { revealer.observe(el); });
+  }
+
+  /* ---------- Active section in the nav ---------- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".nav__links a"));
+  var sections = navLinks
+    .map(function (a) { return document.querySelector(a.getAttribute("href")); })
+    .filter(Boolean);
+
+  function setActive() {
+    var line = window.innerHeight * 0.35;
+    var current = null;
+    sections.forEach(function (s) {
+      if (s.getBoundingClientRect().top <= line) current = s;
+    });
+    // The contact block is short; mark it once the page bottom is reached
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
+      current = sections[sections.length - 1];
+    }
+    navLinks.forEach(function (a) {
+      if (current && a.getAttribute("href") === "#" + current.id) a.setAttribute("aria-current", "true");
+      else a.removeAttribute("aria-current");
     });
   }
+  var ticking = false;
+  window.addEventListener("scroll", function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { setActive(); ticking = false; });
+  }, { passive: true });
+  setActive();
 
-  /* ---------- Screenshot viewer ---------- */
-  const box = document.getElementById("lightbox");
-  if (box && typeof box.showModal === "function") {
-    const img = box.querySelector("img");
-    let opener = null;
+  /* ---------- Screenshot lightbox ---------- */
+  var dialog = document.querySelector(".lightbox");
+  if (dialog && typeof dialog.showModal === "function") {
+    var img = dialog.querySelector("img");
+    var lastTrigger = null;
+
     document.querySelectorAll("[data-zoom]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        opener = btn;
-        img.src = btn.dataset.zoom;
-        img.alt = btn.dataset.zoomAlt || "";
-        box.showModal();
+        lastTrigger = btn;
+        img.src = btn.getAttribute("data-zoom");
+        img.alt = btn.getAttribute("data-alt") || "";
+        dialog.showModal();
       });
     });
-    box.querySelector(".lightbox-close").addEventListener("click", function () { box.close(); });
-    box.addEventListener("click", function (e) { if (e.target === box) box.close(); });
-    box.addEventListener("close", function () { if (opener) opener.focus(); });
+
+    dialog.querySelector(".lightbox__close").addEventListener("click", function () { dialog.close(); });
+    // Click on the backdrop closes it
+    dialog.addEventListener("click", function (e) { if (e.target === dialog) dialog.close(); });
+    dialog.addEventListener("close", function () { if (lastTrigger) lastTrigger.focus(); });
   } else {
-    // Older browsers: open the image in a new tab instead
+    // Old browsers: open the image in a new tab instead
     document.querySelectorAll("[data-zoom]").forEach(function (btn) {
-      btn.addEventListener("click", function () { window.open(btn.dataset.zoom, "_blank", "noopener"); });
+      btn.addEventListener("click", function () { window.open(btn.getAttribute("data-zoom"), "_blank", "noopener"); });
     });
   }
 })();

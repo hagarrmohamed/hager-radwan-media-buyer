@@ -1,36 +1,35 @@
-# Hager Radwan — Media Buyer
+# Hager Radwan — Performance Media Buyer
 
-A single-page portfolio built with plain HTML, CSS and JavaScript. It has no framework, no build step and no backend, so it runs on GitHub Pages as-is.
+A single-page portfolio in plain HTML, CSS and JavaScript. It has no framework, no build step and no backend, so GitHub Pages serves it as-is.
+
+Live: https://hagarrmohamed.github.io/hager-radwan-media-buyer/
 
 ```
 hager-radwan-media-buyer/
-├── index.html      page content and structure
-├── style.css       design (colors, fonts and spacing are variables at the top)
-├── script.js       menu, screenshot viewer, and the SITE settings (name and contact details)
+├── index.html      all content (skills, case studies, contact)
+├── style.css       design system: color, type and glass tokens at the top
+├── script.js       scroll reveals, active nav link, 50→15 product grid, screenshot viewer
 ├── .nojekyll       tells GitHub Pages to serve the files as-is
 └── assets/
     ├── favicon.svg
-    └── img/        Ads Manager screenshots (ad names already hidden)
+    └── img/        ads report screenshots (ad names already hidden)
 ```
 
-## Updating details
+## Design system
 
-**Name, email, phone, WhatsApp:** edit the `SITE` block at the top of `script.js`.
-`phoneIntl` must be the country code plus the number, digits only (for example `201156685718`). It is used for both the `tel:` link and the `https://wa.me/...` link.
+- **Concept:** "Sorted by results". The site reads like an editorial ads report: hairline table rules, mono column labels, and a ROAS column sorted ↓.
+- **Colors:** the brand palette `#567CFF`, `#8EA8FF`, `#7AF8FF`, `#D875FF`, `#8D4BE0` plus deep ink `#17123B`. Neon cyan is used only for highlights and on the dark contact section.
+- **Type:** Bricolage Grotesque (display), Instrument Serif (editorial accents), Instrument Sans (body), JetBrains Mono (labels and data).
+- **Glass:** three strengths, `.glass--strong`, `.glass` and `.glass--soft`. Browsers without `backdrop-filter` get a solid fallback, and the effect is removed when the system asks for reduced transparency.
 
-`index.html` has the same values written in as a fallback for search engines and for visitors with JavaScript turned off. After you change a value in `script.js`, use Find & Replace in `index.html` to update it there too.
+## Editing
 
-**Text and case studies:** edit `index.html`. Each case study is an `<article class="case">` block. To add one, copy a block and change its text, its `id`, and its image.
-
-**Colors:** change the variables at the top of `style.css`. The site uses the five palette colors (`#567CFF`, `#8EA8FF`, `#7AF8FF`, `#D875FF`, `#8D4BE0`). `--wash` is the soft background gradient, `--grad` is the blue-to-purple accent, and `--stripe` is the five-color bar at the top of the page.
-
-**New screenshots:** before you add a screenshot, cover the campaign, ad set and ad names, and the creative thumbnails, with a solid box. Blur is not enough. Save it into `assets/img/`.
+- **Text and case studies:** edit `index.html`. Each case study is an `<article class="case">`, with the screenshot first and the text below it.
+- **Contact details:** search `index.html` for `mailto:`, `tel:` and `wa.me`.
+- **New screenshots:** before you add one, cover the ad names and creative thumbnails with a solid box (blur is not enough). Save it to `assets/img/`, then set its `width` and `height` in the `<img>` tag.
+- After changing the CSS or JS, bump the `?v=` number on the two links in `index.html` so browsers load the new files.
 
 ## Preview locally
-
-Open `index.html` in a browser by double-clicking it.
-
-Or run a local server from this folder:
 
 ```
 python -m http.server 8000
@@ -38,11 +37,14 @@ python -m http.server 8000
 
 Then open http://localhost:8000.
 
-## Publish on GitHub Pages
+## Publish
 
-1. Create a public repository on GitHub, for example `hager-radwan-media-buyer`.
-2. Upload every file in this folder, including `.nojekyll` and the `assets` folder, to the root of the `main` branch.
-3. In the repository, go to **Settings → Pages**. Under **Build and deployment**, choose **Deploy from a branch**, then **main** and **/ (root)**, and click **Save**.
-4. After 1–2 minutes the site is live at `https://<your-username>.github.io/hager-radwan-media-buyer/`.
+The `main` branch is published by GitHub Pages (Settings → Pages → Deploy from a branch → `main` / root). To update the site:
 
-To update the site, upload the changed files again. Pages redeploys automatically.
+```
+git add -A
+git commit -m "Describe the change"
+git push
+```
+
+The live site updates 1–2 minutes after the push.
