@@ -22,7 +22,7 @@ hager-radwan-media-buyer/
 
 **Text and case studies:** edit `index.html`. Each case study is an `<article class="case">` block. To add one, copy a block and change its text, its `id`, and its image.
 
-**Colors:** change the variables at the top of `style.css`. `--blue-ink` is a slightly deeper shade of the palette blue `#567CFF`. Buttons and links use it so that white text on blue stays readable.
+**Colors:** change the variables at the top of `style.css`. The site uses the five palette colors (`#567CFF`, `#8EA8FF`, `#7AF8FF`, `#D875FF`, `#8D4BE0`). `--wash` is the soft background gradient, `--grad` is the blue-to-purple accent, and `--stripe` is the five-color bar at the top of the page.
 
 **New screenshots:** before you add a screenshot, cover the campaign, ad set and ad names, and the creative thumbnails, with a solid box. Blur is not enough. Save it into `assets/img/`.
 
