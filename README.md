@@ -19,7 +19,7 @@ hager-radwan-media-buyer/
 
 - **Concept:** "Sorted by results". The site reads like an editorial ads report: hairline table rules, mono column labels, and a ROAS column sorted ↓.
 - **Colors:** the brand palette `#567CFF`, `#8EA8FF`, `#7AF8FF`, `#D875FF`, `#8D4BE0` plus deep ink `#17123B`. Neon cyan is used only for highlights and on the dark contact section.
-- **Type:** Bricolage Grotesque (display), Instrument Serif (editorial accents), Instrument Sans (body), JetBrains Mono (labels and data).
+- **Type:** one clean sans-serif, Instrument Sans, used for headings, body text and labels.
 - **Glass:** three strengths, `.glass--strong`, `.glass` and `.glass--soft`. Browsers without `backdrop-filter` get a solid fallback, and the effect is removed when the system asks for reduced transparency.
 
 ## Editing
